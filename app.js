@@ -1,40 +1,23 @@
-// // console.log('Enter Back end');
-// const express = require('express');
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-// // const { connectToDb, getDb } = require('./dbm');
+const url = 'mongodb://localhost:27017/crud';
 
-// const app = express();
+const app = express();
 
-// app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-// let db;
+mongoose.connect(url).then(() => {
+    app.listen(8100, () => {
+        console.log('Server open http://localhost:8100/');
+    });
+}).catch((err) => {
+    console.log(err);
+});
 
-// // connectToDb((err) => {
-// //     if(!err){
-// //         app.listen(3001, () => {
-// //             console.log('Server on in port - 3001');
-// //         });
-
-// //         db = getDb();
-// //     }
-// // });
-
-// app.get('/api/users', (req, res) => {
-//     const page = req.query.page || 1;
-//     const usersPerPage = 10;
-
-//     let users = [];
-
-//     db.collection('test')
-//     .find()
-//     .sort({id: 1})
-//     .skip(page * usersPerPage)
-//     .limit(usersPerPage)
-//     .forEach(user => users.push(user))
-//     .then(() => {
-//         res.status(200).json(users);
-//     })
-//     .catch(() => {
-//         res.status(500).json({msg: 'Err getting response'})
-//     });
-// })
+const userRouter = require('./routes/users');
+const arRouter = require('./routes/ar');
+app.use('/api/users', userRouter);
+app.use('/api/ar', arRouter);
